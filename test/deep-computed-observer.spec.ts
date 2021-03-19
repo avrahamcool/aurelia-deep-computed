@@ -326,4 +326,42 @@ describe('deep-computed-observer.spec.ts', () => {
       });
     }
   });
+
+  it('works with reference loops', async () => {
+	  
+	interface Node {
+		parent?: Node;
+		child?: Node;
+		value?: string;
+	}
+	
+    class App {
+      static $view = '<template>${computed}</template>';
+	  
+	  constructor() {
+		  this.root = {};
+		  this.root.child = {parent: this.root};
+	  }
+      root: Node;
+
+      @deepComputedFrom('root')
+      get computed() {
+        return `${this.root.value} => ${this.root.child.value}`;
+      }
+    }
+
+    const { viewModel, host, taskQueue, dispose } = await bootstrapComponent(App);
+    expect(host.textContent).toBe("undefined => undefined");
+
+    viewModel.root.value = "root";
+    taskQueue.flushMicroTaskQueue();
+    expect(host.textContent).toBe("root => undefined");
+
+	viewModel.root.child.value = "child";
+    taskQueue.flushMicroTaskQueue();
+    expect(host.textContent).toBe("root => child");
+	
+    dispose();
+  });
+
 });
