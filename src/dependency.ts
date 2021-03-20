@@ -37,7 +37,12 @@ class ObjectDependency implements IDependency {
   collect(): void {
     const value = this.value;
     Object.keys(value).forEach(prop => {
-      const propertyDep = new ObjectPropertyDependency(this.owner, this, prop, value[prop]);
+      const propValue = value[prop];
+      if(this.owner.seen.has(propValue)) {
+        return;
+      }
+      typeof(propValue) === "object" && this.owner.seen.add(propValue);
+      const propertyDep = new ObjectPropertyDependency(this.owner, this, prop, propValue);
       this.deps.set(prop, propertyDep);
       propertyDep.collect();
     });
@@ -211,6 +216,12 @@ class ArrayDependency extends BaseCollectionDependency {
     }
     for (let i = 0, arr = this.value, ii = arr.length; ii > i; ++i) {
       let value = arr[i];
+	  
+      if(this.owner.seen.has(value)) {
+        return;
+      }
+      typeof(value) === "object" && this.owner.seen.add(value);
+	  
       const dep = getDependency(owner, this, value);
       // if an index is not observable
       // just ignore
@@ -254,6 +265,10 @@ class MapDependency extends BaseCollectionDependency {
       return;
     }
     this.value.forEach((value, key) => {
+      if(this.owner.seen.has(value)) {
+        return;
+      }
+      typeof(value) === "object" && this.owner.seen.add(value);
       const dep = getDependency(owner, this, value);
       if (dep == void 0) {
         return;
@@ -296,6 +311,10 @@ class SetDependency extends BaseCollectionDependency {
       return;
     }
     this.value.forEach(value => {
+      if(this.owner.seen.has(value)) {
+        return;
+      }
+      typeof(value) === "object" && this.owner.seen.add(value);
       const dep = getDependency(owner, this, value);
       if (dep == void 0) {
         return;

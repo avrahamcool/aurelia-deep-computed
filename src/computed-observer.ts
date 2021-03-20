@@ -17,7 +17,7 @@ import {
 import { ComputedExpression } from './computed-expression';
 import { getDependency, releaseDep } from './dependency';
 
-// a deep observer needsd to be able to
+// a deep observer needs to be able to
 // - observe all properties, recursively without boundary
 // - detect a path of observer change
 
@@ -97,6 +97,8 @@ export class ComputedObserver {
 
   public cache: boolean;
 
+  public seen = new WeakSet<object>();
+  
   constructor(
     public obj: object,
     /**
