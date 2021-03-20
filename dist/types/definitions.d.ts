@@ -35,6 +35,7 @@ export interface IComputedObserver {
     readonly deep: boolean;
     readonly observerLocator: ObserverLocator;
     handleChange(dep: IDependency): void;
+    readonly seen: WeakSet<object>;
 }
 export interface IDependency {
     /**
@@ -50,7 +51,7 @@ export interface IDependency {
      */
     deps: Map<unknown, IDependency>;
     /**
-     * Indicates whther the dependency is observing
+     * Indicates whether the dependency is observing
      */
     connected: boolean;
     /**

@@ -10,6 +10,7 @@ export declare class ComputedObserver {
     observerLocator: ObserverLocator;
     deep: boolean;
     cache: boolean;
+    seen: WeakSet<object>;
     constructor(obj: object, 
     /**
      * The expression that will be used to evaluate

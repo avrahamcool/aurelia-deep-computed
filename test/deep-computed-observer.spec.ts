@@ -339,8 +339,8 @@ describe('deep-computed-observer.spec.ts', () => {
       static $view = '<template>${computed}</template>';
 	  
 	  constructor() {
-		  this.root = {};
-		  this.root.child = {parent: this.root};
+		  this.root = {value: undefined};
+		  this.root.child = {parent: this.root, value: undefined};
 	  }
       root: Node;
 
